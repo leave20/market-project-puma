@@ -1,12 +1,10 @@
 package com.puma.marketproject.controller;
 
 import com.puma.marketproject.model.Cliente;
-import com.puma.marketproject.repository.ClienteRepository;
 import com.puma.marketproject.service.IClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,7 +20,40 @@ public class ClienteController {
     }
 
     @GetMapping("/listar")
-    public List<Cliente> listar(){
+    public List<Cliente> listar() {
         return clienteService.findAll();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Cliente> editar(@PathVariable("id") Long id) {
+        Cliente cliente = clienteService.editarCliente(id);
+        return ResponseEntity.ok(cliente);
+    }
+
+    @PostMapping("/guardar")
+    public ResponseEntity<Cliente> guardar(@RequestBody Cliente cliente) {
+        clienteService.save(cliente);
+        return ResponseEntity.ok(cliente);
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<Cliente> actualizar(@RequestBody Cliente cliente, @PathVariable("id") Long id) {
+        Cliente clienteActual = clienteService.editarCliente(id);
+        clienteActual.setNombre(cliente.getNombre());
+        clienteActual.setApellido(cliente.getApellido());
+        clienteActual.setDni(cliente.getDni());
+        clienteService.save(clienteActual);
+        return ResponseEntity.ok(clienteActual);
+    }
+
+
+    //no aplicar en caso real
+    //en su lugar reemplazar por un cambio de estado
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable("id") Long id) {
+        clienteService.eliminarCliente(id);
+        return ResponseEntity.ok().build();
+    }
+
+
 }
